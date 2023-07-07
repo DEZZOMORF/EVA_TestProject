@@ -6,20 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".presentation.screens.camera.CameraFragment">
 
-    <androidx.camera.view.PreviewView
-        android:id="@+id/preview_camera_fragment"
-        android:layout_width="match_parent"
-        app:scaleType="fitCenter"
-        android:layout_height="match_parent"
-        tools:background="@color/white" />
-
     <ImageView
         android:id="@+id/filter_preview_image_view_camera_fragment"
         android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:contentDescription="@string/preview_with_filter"
+        app:layout_constraintBottom_toTopOf="@+id/flow"
+        app:layout_constraintTop_toTopOf="parent"
         app:scaleType="fitCenter"
-        android:layout_height="match_parent"
-        tools:background="@color/white"
-        android:contentDescription="@string/preview_with_filter" />
+        tools:background="@color/white" />
 
     <androidx.constraintlayout.helper.widget.Flow
         android:id="@+id/flow"
@@ -28,7 +23,7 @@
         android:background="@color/dark_transparent_background"
         android:paddingVertical="12dp"
         app:constraint_referenced_ids="change_camera_image_button_camera_fragment,capture_image_button_camera_fragment,gallery_image_button_camera_fragment"
-        app:layout_constraintBottom_toBottomOf="@+id/preview_camera_fragment" />
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <ImageButton
         android:id="@+id/capture_image_button_camera_fragment"

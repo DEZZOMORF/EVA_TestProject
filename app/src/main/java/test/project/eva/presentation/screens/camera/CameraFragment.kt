@@ -1,5 +1,6 @@
 package test.project.eva.presentation.screens.camera
 
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -9,7 +10,6 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageProxy
-import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -21,6 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import test.project.eva.R
 import test.project.eva.Utils
 import test.project.eva.databinding.FragmentCameraBinding
+import test.project.eva.extensions.rotate
 import test.project.eva.managers.PhotoFilterManager
 import test.project.eva.presentation.adapters.FilterRecyclerViewAdapter
 import test.project.eva.presentation.screens.base.BaseFragment
@@ -70,22 +71,19 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         }
     }
 
+    @androidx.annotation.OptIn(androidx.camera.core.ExperimentalGetImage::class)
     override fun analyze(image: ImageProxy) {
-        setPhotoFilterOnPreview()
+        val capturedImageBitmap = image.toBitmap().rotate(image.imageInfo.rotationDegrees.toFloat())
+        setPhotoFilterOnPreview(capturedImageBitmap)
         image.close()
     }
 
-    private fun setPhotoFilterOnPreview() {
+    private fun setPhotoFilterOnPreview(bitmap: Bitmap) {
         try {
-            val bitmap = binding.previewCameraFragment.bitmap
             val colorMatrix = viewModel.selectedPhotoFilter.value?.colorMatrix
-            bitmap?.let {
-                binding.filterPreviewImageViewCameraFragment.setImageBitmap(
-                    Utils.setPhotoFilter(
-                        it, colorMatrix
-                    )
-                )
-            }
+            binding.filterPreviewImageViewCameraFragment.setImageBitmap(
+                Utils.setPhotoFilter(bitmap, colorMatrix)
+            )
         } catch (e: Exception) {
             Log.e(TAG, "setPhotoFilterOnPreview: " + e.message)
         }
@@ -105,12 +103,10 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
     }
 
     private fun startCamera(cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA) {
-        val preview: Preview = Preview.Builder().build()
-        preview.setSurfaceProvider(binding.previewCameraFragment.surfaceProvider)
         imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(requireContext()), this)
         val cameraProvider = cameraProviderFuture.get()
         cameraProvider.unbindAll()
-        cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture, imageAnalysis)
+        cameraProvider.bindToLifecycle(this, cameraSelector, imageCapture, imageAnalysis)
     }
 
     private fun takePhoto() {

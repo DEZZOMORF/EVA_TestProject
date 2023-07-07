@@ -37,7 +37,7 @@
         android:id="@+id/select_from_gallery_button_fragment_editor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/save"
         android:src="@drawable/baseline_insert_photo_64" />
 

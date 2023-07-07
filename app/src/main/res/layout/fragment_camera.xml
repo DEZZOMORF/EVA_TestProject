@@ -29,7 +29,7 @@
         android:id="@+id/capture_image_button_camera_fragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/capture_photo"
         android:src="@drawable/take_photo_button_selector" />
 
@@ -37,7 +37,7 @@
         android:id="@+id/change_camera_image_button_camera_fragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/change_camera"
         android:src="@drawable/baseline_switch_camera_64" />
 
@@ -45,7 +45,7 @@
         android:id="@+id/gallery_image_button_camera_fragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/open_gallery"
         android:src="@drawable/baseline_insert_photo_64" />
 

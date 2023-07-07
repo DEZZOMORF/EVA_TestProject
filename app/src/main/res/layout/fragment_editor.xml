@@ -20,14 +20,13 @@
         android:id="@+id/buttons_flow_fragment_editor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/dark_transparent_background"
-        android:paddingTop="28dp"
+        android:background="@color/dark_transparent"
         app:constraint_referenced_ids="random_image_button_fragment_editor,select_from_gallery_button_fragment_editor,save_image_button_fragment_editor,share_image_button_fragment_editor"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/random_image_button_fragment_editor"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="?android:attr/selectableItemBackground"
         android:contentDescription="@string/save"
@@ -35,15 +34,15 @@
 
     <ImageButton
         android:id="@+id/select_from_gallery_button_fragment_editor"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:background="?android:attr/selectableItemBackground"
         android:contentDescription="@string/save"
         android:src="@drawable/baseline_insert_photo_64" />
 
     <ImageButton
         android:id="@+id/save_image_button_fragment_editor"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="?android:attr/selectableItemBackground"
         android:contentDescription="@string/save"
@@ -53,7 +52,7 @@
 
     <ImageButton
         android:id="@+id/share_image_button_fragment_editor"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="?android:attr/selectableItemBackground"
         android:contentDescription="@string/share"
@@ -65,7 +64,7 @@
         android:id="@+id/filter_list_recycler_view_fragment_editor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/dark_transparent_background"
+        android:background="@color/dark_transparent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <ProgressBar

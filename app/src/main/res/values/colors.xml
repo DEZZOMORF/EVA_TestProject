@@ -8,5 +8,6 @@
     <color name="grey">#878787</color>
     <color name="pink">#FF0077</color>
     <color name="green">#00FF00</color>
-    <color name="dark_transparent_background">#4D000000</color>
+    <color name="dark_transparent">#4D000000</color>
+    <color name="background">#212121</color>
 </resources>

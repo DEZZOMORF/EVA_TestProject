@@ -1,10 +1,7 @@
 package test.project.eva.presentation.adapters
 
-import android.content.Context
-import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import test.project.eva.databinding.ItemPhotoFilterBinding
 import test.project.eva.presentation.models.PhotoFilter
@@ -20,7 +17,6 @@ class FilterRecyclerViewAdapter : RecyclerView.Adapter<FilterRecyclerViewAdapter
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         viewHolder.bindView(
-            context = viewHolder.itemView.context,
             position = position
         )
     }
@@ -28,9 +24,9 @@ class FilterRecyclerViewAdapter : RecyclerView.Adapter<FilterRecyclerViewAdapter
     override fun getItemCount() = list.size
 
     inner class ViewHolder(private val binding: ItemPhotoFilterBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bindView(context: Context, position: Int) {
+        fun bindView(position: Int) {
             val filter = list[position]
-            binding.circleItemPhotoFilter.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, filter.color))
+            binding.filterPreviewImageViewItemPhotoFilter.setImageBitmap(filter.preview)
             binding.filterNameTextViewItemPhotoFilter.text = filter.name
             binding.root.setOnClickListener {
                 onItemClick.invoke(position)

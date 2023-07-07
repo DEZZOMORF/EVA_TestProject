@@ -3,7 +3,6 @@ package test.project.eva.presentation
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
 import dagger.hilt.android.AndroidEntryPoint
 import test.project.eva.R
 import test.project.eva.databinding.ActivityMainBinding
@@ -20,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        setTransparentStatusBar()
+        setUpUI()
         requestPermissions()
     }
 
@@ -28,8 +27,9 @@ class MainActivity : AppCompatActivity() {
         PermissionsManager(this).requestPermissions()
     }
 
-    private fun setTransparentStatusBar() {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        window.statusBarColor = ContextCompat.getColor(this, R.color.dark_transparent_background)
+    private fun setUpUI() {
+        val backgroundColor = ContextCompat.getColor(this, R.color.background)
+        window.statusBarColor = backgroundColor
+        binding.root.setBackgroundColor(backgroundColor)
     }
 }

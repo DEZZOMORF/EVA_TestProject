@@ -1,11 +1,10 @@
 package test.project.eva.presentation.models
 
+import android.graphics.Bitmap
 import android.graphics.ColorMatrixColorFilter
-import androidx.annotation.ColorRes
 
 data class PhotoFilter(
-    @ColorRes
-    val color: Int,
+    val preview: Bitmap,
     val name: String,
     val colorMatrix: ColorMatrixColorFilter?
 )

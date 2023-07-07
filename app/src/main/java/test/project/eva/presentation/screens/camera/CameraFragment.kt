@@ -3,9 +3,7 @@ package test.project.eva.presentation.screens.camera
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
@@ -30,6 +28,7 @@ import test.project.eva.presentation.screens.base.BaseFragment
 class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding::inflate),
     ImageAnalysis.Analyzer {
 
+    private var isRecyclerViewInit: Boolean = false
     private val viewModel: CameraViewModel by viewModels()
 
     private val filterRecyclerViewAdapter: FilterRecyclerViewAdapter by lazy {
@@ -48,9 +47,9 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
 
     private var imageCapture: ImageCapture = ImageCapture.Builder().build()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initRecyclerViews()
+    override fun onResume() {
+        super.onResume()
+        isRecyclerViewInit = false
     }
 
     override fun setUpClicks() {
@@ -74,6 +73,10 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
     @androidx.annotation.OptIn(androidx.camera.core.ExperimentalGetImage::class)
     override fun analyze(image: ImageProxy) {
         val capturedImageBitmap = image.toBitmap().rotate(image.imageInfo.rotationDegrees.toFloat())
+        if (!isRecyclerViewInit) {
+            isRecyclerViewInit = true
+            initRecyclerViews(capturedImageBitmap)
+        }
         setPhotoFilterOnPreview(capturedImageBitmap)
         image.close()
     }
@@ -89,12 +92,13 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         }
     }
 
-    private fun initRecyclerViews() {
+    private fun initRecyclerViews(previewImage: Bitmap) {
         binding.filterListRecyclerViewFragmentCamera.layoutManager =
             LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
         binding.filterListRecyclerViewFragmentCamera.adapter = filterRecyclerViewAdapter
-        filterRecyclerViewAdapter.setUpData(PhotoFilterManager.photoFilterList) { position ->
-            viewModel.setSelectedPhotoFilter(filterRecyclerViewAdapter.getItemByPosition(position))
+        filterRecyclerViewAdapter.setUpData(PhotoFilterManager.photoFilterList(previewImage)) { position ->
+            viewModel.setSelectedPhotoFilter(filterRecyclerViewAdapter.getItemByPosition(position)
+            )
         }
     }
 

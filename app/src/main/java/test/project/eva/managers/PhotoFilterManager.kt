@@ -1,28 +1,24 @@
 package test.project.eva.managers
 
+import android.graphics.Bitmap
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
-import test.project.eva.R
+import test.project.eva.Utils
 import test.project.eva.presentation.models.PhotoFilter
 
 object PhotoFilterManager {
 
-    val photoFilterList =
+    fun photoFilterList(preview: Bitmap) =
         listOf(
-            PhotoFilter(R.color.white, "Default", null),
-            PhotoFilter(R.color.grey, "Grey", greyColorMatrixFilter),
-            PhotoFilter(R.color.red, "Red", redColorMatrixFilter),
-            PhotoFilter(R.color.black, "Contrast1", contrastColorMatrixFilter(0.3f)),
-            PhotoFilter(R.color.green, "Green", greenColorMatrixFilter),
-            PhotoFilter(R.color.black, "Contrast2", contrastColorMatrixFilter(0.6f)),
-            PhotoFilter(R.color.blue, "Blue", blueColorMatrixFilter),
-            PhotoFilter(R.color.black, "Contrast3", contrastColorMatrixFilter(0.9f)),
+            PhotoFilter(preview, "Default", null),
+            PhotoFilter(Utils.setPhotoFilter(preview, greyColorMatrixFilter), "Grey", greyColorMatrixFilter),
+            PhotoFilter(Utils.setPhotoFilter(preview, redColorMatrixFilter), "Red", redColorMatrixFilter),
+            PhotoFilter(Utils.setPhotoFilter(preview, contrastColorMatrixFilter(0.3f)), "Contrast1", contrastColorMatrixFilter(0.3f)),
+            PhotoFilter(Utils.setPhotoFilter(preview, greenColorMatrixFilter), "Green", greenColorMatrixFilter),
+            PhotoFilter(Utils.setPhotoFilter(preview, contrastColorMatrixFilter(0.6f)), "Contrast2", contrastColorMatrixFilter(0.6f)),
+            PhotoFilter(Utils.setPhotoFilter(preview, blueColorMatrixFilter), "Blue", blueColorMatrixFilter),
+            PhotoFilter(Utils.setPhotoFilter(preview, contrastColorMatrixFilter(0.9f)), "Contrast3", contrastColorMatrixFilter(0.9f)),
         )
-
-    private val defaultColorMatrixFilter get(): ColorMatrixColorFilter {
-        val colorMatrix = ColorMatrix()
-        return ColorMatrixColorFilter(colorMatrix)
-    }
 
     private val greyColorMatrixFilter get(): ColorMatrixColorFilter {
         val colorMatrix = ColorMatrix()

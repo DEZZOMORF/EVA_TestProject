@@ -51,7 +51,7 @@ class EditorFragment : BaseFragment<FragmentEditorBinding>(FragmentEditorBinding
                     binding.pictureImageViewFragmentEditor.setImageDrawable(selectedPicture.data)
                     binding.saveImageButtonFragmentEditor.isVisible = true
                     binding.shareImageButtonFragmentEditor.isVisible = true
-                    initRecyclerViews()
+                    initRecyclerViews(selectedPicture.data?.toBitmap())
                 }
                 is RequestDataState.Error -> {
                     binding.progressBarFragmentEditor.isVisible = false
@@ -96,15 +96,17 @@ class EditorFragment : BaseFragment<FragmentEditorBinding>(FragmentEditorBinding
         }
     }
 
-    private fun initRecyclerViews() {
-        binding.filterListRecyclerViewFragmentEditor.layoutManager = LinearLayoutManager(
-            requireContext(),
-            RecyclerView.HORIZONTAL,
-            false
-        )
-        binding.filterListRecyclerViewFragmentEditor.adapter = filterRecyclerViewAdapter
-        filterRecyclerViewAdapter.setUpData(PhotoFilterManager.photoFilterList) { position ->
-            setPhotoFilter(filterRecyclerViewAdapter.getItemByPosition(position))
+    private fun initRecyclerViews(image: Bitmap?) {
+        image?.let {
+            binding.filterListRecyclerViewFragmentEditor.layoutManager = LinearLayoutManager(
+                requireContext(),
+                RecyclerView.HORIZONTAL,
+                false
+            )
+            binding.filterListRecyclerViewFragmentEditor.adapter = filterRecyclerViewAdapter
+            filterRecyclerViewAdapter.setUpData(PhotoFilterManager.photoFilterList(it)) { position ->
+                setPhotoFilter(filterRecyclerViewAdapter.getItemByPosition(position))
+            }
         }
     }
 

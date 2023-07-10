@@ -11,6 +11,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import test.project.eva.data.network.ApiService
 import test.project.eva.data.network.NetworkUrls
+import test.project.eva.data.repository.NetworkRepositoryImpl
+import test.project.eva.domain.repository.NetworkRepository
 import javax.inject.Singleton
 
 @Module
@@ -55,5 +57,11 @@ object NetworkModule {
         return retrofit
             .build()
             .create(ApiService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideNetworkRepository(apiService: ApiService): NetworkRepository {
+        return NetworkRepositoryImpl(apiService)
     }
 }

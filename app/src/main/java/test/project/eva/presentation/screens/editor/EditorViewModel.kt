@@ -1,9 +1,11 @@
 package test.project.eva.presentation.screens.editor
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import androidx.activity.result.ActivityResultLauncher
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,22 +15,25 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import test.project.eva.domain.states.RequestDataState
-import test.project.eva.domain.states.SavePhotoState
 import test.project.eva.domain.usecase.GetRandomPhotoUseCase
-import test.project.eva.domain.usecase.SavePhotoUseCase
+import test.project.eva.managers.GlideManager
 import test.project.eva.presentation.models.PhotoFilter
+import test.project.eva.presentation.utils.UIState
+import test.project.eva.provider.gallery.GalleryProvider
+import test.project.eva.provider.gallery.SavePhotoState
 import java.io.FileNotFoundException
 import java.io.InputStream
 import javax.inject.Inject
 
 @HiltViewModel
 class EditorViewModel @Inject constructor(
-    private val savePhotoUseCase: SavePhotoUseCase,
+    private val galleryProvider: GalleryProvider,
+    private val glideManager: GlideManager,
     private val getRandomPhotoUseCase: GetRandomPhotoUseCase
 ) : ViewModel() {
 
-    private val _getPictureState: MutableLiveData<RequestDataState<Drawable?>> = MutableLiveData()
-    val getPictureState: LiveData<RequestDataState<Drawable?>> = _getPictureState
+    private val _getPictureState: MutableLiveData<UIState<Drawable?>> = MutableLiveData()
+    val getPictureState: LiveData<UIState<Drawable?>> = _getPictureState
 
     private val _savePictureState: MutableLiveData<SavePhotoState> = MutableLiveData()
     val savePictureState: LiveData<SavePhotoState> = _savePictureState
@@ -41,35 +46,40 @@ class EditorViewModel @Inject constructor(
             _getPictureState.value = try {
                 val inputStream: InputStream? = context.contentResolver.openInputStream(pictureUri)
                 val drawable = Drawable.createFromStream(inputStream, pictureUri.toString())
-                RequestDataState.Success(drawable)
+                UIState.Success(drawable)
             } catch (e: FileNotFoundException) {
-                RequestDataState.Error(e)
+                UIState.Error(e)
             }
         }
     }
 
     fun savePicture(bitmap: Bitmap): SavePhotoState {
-        val result = savePhotoUseCase.execute(bitmap)
+        val result = galleryProvider.savePhoto(bitmap)
         _savePictureState.value = result
         return result
     }
 
     fun getSelectedPicture(): Drawable? {
         return when (val requestDataState = _getPictureState.value) {
-            is RequestDataState.Success -> requestDataState.data
+            is UIState.Success -> requestDataState.data
             else -> null
         }
     }
 
     fun getRandomPhoto() {
-        _getPictureState.value = RequestDataState.Loading
-        viewModelScope.launch(Dispatchers.IO) {
-            val result = getRandomPhotoUseCase.execute()
-            withContext(Dispatchers.Main) {
-                _getPictureState.value = when (result) {
-                    is RequestDataState.Loading -> RequestDataState.Loading
-                    is RequestDataState.Success -> RequestDataState.Success(result.data.drawable)
-                    is RequestDataState.Error -> RequestDataState.Error(result.exception)
+        _getPictureState.value = UIState.Loading
+        viewModelScope.launch(Dispatchers.Main) {
+            val result = withContext(Dispatchers.IO) {
+                getRandomPhotoUseCase.execute()
+            }
+            _getPictureState.value = when (result) {
+                is RequestDataState.Loading -> UIState.Loading
+                is RequestDataState.Error -> UIState.Error(result.exception)
+                is RequestDataState.Success -> {
+                    val drawable = withContext(Dispatchers.IO) {
+                        glideManager.loadDrawable(result.data.imageUrl)
+                    }
+                    UIState.Success(drawable)
                 }
             }
         }
@@ -77,5 +87,9 @@ class EditorViewModel @Inject constructor(
 
     fun setPhotoFilter(photoFilter: PhotoFilter){
         _photoFilter.value = photoFilter
+    }
+
+    fun selectPictureFromGallery(selectPictureLauncher: ActivityResultLauncher<Intent>) {
+        galleryProvider.selectPictureFromGallery(selectPictureLauncher)
     }
 }

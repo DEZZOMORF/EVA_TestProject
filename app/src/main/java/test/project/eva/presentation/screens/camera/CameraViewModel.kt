@@ -7,15 +7,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import test.project.eva.Utils
-import test.project.eva.domain.usecase.SavePhotoUseCase
 import test.project.eva.presentation.models.PhotoFilter
+import test.project.eva.provider.gallery.GalleryProvider
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
 @HiltViewModel
 class CameraViewModel @Inject constructor(
-    private val savePhotoUseCase: SavePhotoUseCase
+    private val galleryProvider: GalleryProvider
 ) : ViewModel() {
 
     private val _cameraSelector: MutableLiveData<CameraSelector> = MutableLiveData(CameraSelector.DEFAULT_BACK_CAMERA)
@@ -43,7 +43,7 @@ class CameraViewModel @Inject constructor(
             override fun onCaptureSuccess(image: ImageProxy) {
                 val bitmap = Utils.imageProxyToBitmap(image)
                 val bitmapWithFilter = Utils.setPhotoFilter(bitmap, _selectedPhotoFilter.value?.colorMatrix)
-                savePhotoUseCase.execute(bitmapWithFilter)
+                galleryProvider.savePhoto(bitmapWithFilter)
                 super.onCaptureSuccess(image)
             }
         })

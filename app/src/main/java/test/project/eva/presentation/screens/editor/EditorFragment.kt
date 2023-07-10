@@ -15,13 +15,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import test.project.eva.R
 import test.project.eva.Utils
 import test.project.eva.databinding.FragmentEditorBinding
-import test.project.eva.domain.states.RequestDataState
-import test.project.eva.domain.states.SavePhotoState
 import test.project.eva.extensions.showToast
 import test.project.eva.managers.PhotoFilterManager
 import test.project.eva.presentation.adapters.FilterRecyclerViewAdapter
 import test.project.eva.presentation.models.PhotoFilter
 import test.project.eva.presentation.screens.base.BaseFragment
+import test.project.eva.presentation.utils.UIState
+import test.project.eva.provider.gallery.SavePhotoState
 
 @AndroidEntryPoint
 class EditorFragment : BaseFragment<FragmentEditorBinding>(FragmentEditorBinding::inflate) {
@@ -43,17 +43,17 @@ class EditorFragment : BaseFragment<FragmentEditorBinding>(FragmentEditorBinding
     override fun setUpObservers() {
         viewModel.getPictureState.observe(this) { selectedPicture ->
             when(selectedPicture) {
-                is RequestDataState.Loading -> {
+                is UIState.Loading -> {
                     binding.progressBarFragmentEditor.isVisible = true
                 }
-                is RequestDataState.Success -> {
+                is UIState.Success -> {
                     binding.progressBarFragmentEditor.isVisible = false
                     binding.pictureImageViewFragmentEditor.setImageDrawable(selectedPicture.data)
                     binding.saveImageButtonFragmentEditor.isVisible = true
                     binding.shareImageButtonFragmentEditor.isVisible = true
                     initRecyclerViews(selectedPicture.data?.toBitmap())
                 }
-                is RequestDataState.Error -> {
+                is UIState.Error -> {
                     binding.progressBarFragmentEditor.isVisible = false
                     Log.e(TAG, "${selectedPicture.exception.message}")
                 }
@@ -63,7 +63,9 @@ class EditorFragment : BaseFragment<FragmentEditorBinding>(FragmentEditorBinding
         viewModel.savePictureState.observe(this) { savePictureState ->
             when (savePictureState) {
                 is SavePhotoState.Success -> requireContext().showToast(R.string.saved)
-                is SavePhotoState.Error -> requireContext().showToast(R.string.error)
+                is SavePhotoState.Error -> requireContext().showToast(
+                    savePictureState.error.message ?: resources.getString(R.string.error)
+                )
             }
         }
 
@@ -111,15 +113,7 @@ class EditorFragment : BaseFragment<FragmentEditorBinding>(FragmentEditorBinding
     }
 
     private fun selectPictureFromGallery() {
-        val intent = Intent()
-        intent.type = "image/*"
-        intent.action = Intent.ACTION_GET_CONTENT
-        selectPictureLauncher.launch(
-            Intent.createChooser(
-                intent,
-                getString(R.string.select_picture)
-            )
-        )
+        viewModel.selectPictureFromGallery(selectPictureLauncher)
     }
 
     private fun setPhotoFilter(photoFilter: PhotoFilter) {

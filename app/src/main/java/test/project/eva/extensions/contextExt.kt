@@ -7,3 +7,7 @@ import androidx.annotation.StringRes
 fun Context.showToast(@StringRes str:Int) {
     Toast.makeText(this, str, Toast.LENGTH_SHORT).show()
 }
+
+fun Context.showToast(str:String) {
+    Toast.makeText(this, str, Toast.LENGTH_SHORT).show()
+}
